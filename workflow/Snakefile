@@ -1,4 +1,18 @@
-# Main entrypoint of the workflow. 
-# Please follow the best practices: 
-# https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
-# in particular regarding the standardized folder structure mentioned there. 
+# Generate geometries 
+
+rule make_packmol_config:
+    input:
+        "scripts/pack.inp"
+    output:
+        "data/system.pdb"
+    shell:
+        "packmol > {input} " # Generate Packmol file 
+        "mv {input} {output}" # Move Packmol generated file to desired file name 
+
+rule make_moltemp_file:
+    input:
+        "scripts/system.lt"
+        "-pdb data/system.pdb"
+    output:
+        
+
