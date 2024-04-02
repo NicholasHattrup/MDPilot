@@ -1,6 +1,6 @@
-import ("GROMOS_54A7_ATB.lt")
+import "GROMOS_54A7_ATB.lt"
 
-Water inherits GROMOS_54A7_ATB {
+water inherits GROMOS_54A7_ATB {
     write("Data Atoms"){
         $atom:H2     $mol:... @atom:H       0.413000  7.5927524880E-01  5.3143649630E-01  0.0000000000E+00
         $atom:O1     $mol:... @atom:OEOpt  -0.826000  6.8600000000E-07 -7.2790218600E-02  0.0000000000E+00

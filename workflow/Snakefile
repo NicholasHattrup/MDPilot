@@ -6,8 +6,8 @@ rule make_packmol_config:
     output:
         "campaign/scripts/{sample}.pdb"
     shell:
-        "cd (dirname '${input[0]}') "
-        "packmol < {input[0]}" # Generate Packmol file 
+        "cd $(dirname {input}); "
+        "packmol < $(basename {input})" 
 
 rule move_packmol_config:
     input:
@@ -23,17 +23,20 @@ rule move_packmol_config:
 
 rule make_moltemp_file:
     input:
-        "campaign/scripts/system.lt",
-        "campaign/geometries/system.pdb"
-        "id"
+        lt_file="campaign/scripts/system.lt",
+        pdb_file="campaign/geometries/{sample}.pdb"
     output:
-        "system.data"
-        "system.in.init"
-        "system.in.settings"
+        data_file="runs/{sample}/system.data",
+        init_file="runs/{sample}/system.in.init",
+        settings_file="runs/{sample}/system.in.settings"
     shell:
-        "moltemplate.sh -pdb {input[1]} {inpit[0]}  " # Generate Moltemplate files
-        "mkdir runs/{input[2]} "
-        "mv {output} runs/{input[2]}" # Move Moltemplate generated files to desired file name
-
-        
-
+        """
+        mkdir -p runs/{wildcards.sample} && \
+        cp {input.pdb_file} $(dirname {input.lt_file}) && \
+        cd $(dirname {input.lt_file}) && \
+        moltemplate.sh -pdb $(basename {input.pdb_file}) $(basename {input.lt_file}) && \
+        mv system.data ../../{output.data_file} && \
+        mv system.in.init ../../{output.init_file} && \
+        mv system.in.settings ../../{output.settings_file} && \
+        rm $(basename {input.pdb_file})
+        """
