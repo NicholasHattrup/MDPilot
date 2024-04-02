@@ -2,17 +2,38 @@
 
 rule make_packmol_config:
     input:
-        "scripts/pack.inp"
+        "campaign/scripts/{sample}.inp"
     output:
-        "data/system.pdb"
+        "campaign/scripts/{sample}.pdb"
     shell:
-        "packmol > {input} " # Generate Packmol file 
-        "mv {input} {output}" # Move Packmol generated file to desired file name 
+        "cd (dirname '${input[0]}') "
+        "packmol < {input[0]}" # Generate Packmol file 
+
+rule move_packmol_config:
+    input:
+        "campaign/scripts/{sample}.pdb"
+    output:
+        "campaign/geometries/{sample}.pdb"
+    shell:
+        "mv {input} {output}" # Move Packmol generated file to desired file name
+
+# Campaign 
+# - scripts, geometries, runs 
+
 
 rule make_moltemp_file:
     input:
-        "scripts/system.lt"
-        "-pdb data/system.pdb"
+        "campaign/scripts/system.lt",
+        "campaign/geometries/system.pdb"
+        "id"
     output:
+        "system.data"
+        "system.in.init"
+        "system.in.settings"
+    shell:
+        "moltemplate.sh -pdb {input[1]} {inpit[0]}  " # Generate Moltemplate files
+        "mkdir runs/{input[2]} "
+        "mv {output} runs/{input[2]}" # Move Moltemplate generated files to desired file name
+
         
 
